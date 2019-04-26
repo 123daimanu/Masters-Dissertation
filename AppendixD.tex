@@ -1,0 +1,38 @@
+\chapter{Distribution of inclination angle $i$, longitude $L$ and latitude $B$}
+\section{Transformation of Random Distribution}
+If $x_1$, $x_2$ ,$x_3$, $\ldots$ are the random deviates with a joint probablity distribution $p(x_1,x_2,x_3,\ldots)$ and if $y_1$, $y_2$, $y_3$,$\ldots\ldots$ are each function of all $x$, then the joint probablity distribution of the $y$ is given by:
+\begin{equation}\label{prob_dist}
+p(y_1,y_2,y_3,\ldots)dy_1dy_2dy_3\ldots = p(x_1,x_2,x_3,\ldots)\left|\frac{\partial(x_1,x_2,x_3,\ldots)}{\partial(y_1,y_2,y_3,\ldots)}\right|dy_1dy_2dy_3\ldots
+\end{equation} 
+where $|\partial()/\partial()|$ is the Jacobian of the $x$ with respect to the $y$ (or reciprocal of the Jacobian determinant of the $y$ with respect to the $x$).
+\subsection{Random Distribution to Spherical Random Distribution}
+Let us consider uniform random distribution of the points in a sphere. Now we have to determine the distribution of the points with respect to the spherical coordinates i.e radius $r$, polar angle $\theta$ and azimuthal angle $\phi$. Then,
+\begin{equation}\label{transformation}
+\begin{aligned}
+x=r\cos\phi\sin\theta\\
+y=r\sin\phi\sin\theta\\
+z=r\cos\theta
+\end{aligned}
+\end{equation}
+
+And the Jacobian for transfomation given in \eqref{transformation} is $r^2\,\sin\theta$.
+So from \eqref{prob_dist} we have
+\begin{equation}\label{prob}
+p(r,\theta,\phi)dr\,d\theta\,d\phi=r^2sin\theta\,p(x,y,z)dr\,d\theta\,d\phi
+\end{equation}
+From \eqref{prob}, if the probablity distribution in r, $\theta$ and $\phi$ are independent and similar case for $x\,\,y\,\,z$ we can write
+\begin{equation}
+p(r) p(\theta) p(\phi) = r^2 \sin\theta p(x) p(y) p(z)
+\end{equation}
+But $p(x)=p(y)=p(z)=1$. So,
+\begin{equation}
+\begin{aligned}
+p(r)&=&r^2\\p(\theta)&=&\sin\theta\\p(\phi)&=&1
+\end{aligned}
+\end{equation} 
+From above we can say that the $\theta$ distribution is $\sin\theta$ and $\phi$ is uniformly randomly distributed.
+\section{Distribution of $B$ and $L$}
+If we make analogy with the spherical coordinates, we can easily see that $B$ = $\frac{\pi}{2}-\theta$ and $L$ = $\phi$. The distribution of the galaxies are uniformly random in the surface of celestial sphere. So, we can deduce that the distribution of $B$ is $\sin(\frac{\pi}{2}-B)=\cos B$ and the distribution of $L$ is uniform.
+
+\section{Distribution of inclination angle $i$}
+If we consider line of sight as the Z-axis and make analogy with the spherical coordinates then $i$ = $\theta$. As we consider the distribution of galaxies to be isotropic so the distribution of inclination angle $i$ is $\sin i$.

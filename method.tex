@@ -1,0 +1,533 @@
+\section{Methodology}
+\subsection{Transformation of Coordinates}
+The data that we have received was in equatorial coordinate system but we want it to be analysed in the galactic and Supergalactic coordinate system so we used the code written in python for the web scrapping from NED calculator.
+\subsection{Transformtion From 2-D to 3-D}
+The primary data that we obtained contains only longitude, latitude, major axis, minor axis and the position angle. These are  the information about the 2-D projection of the galaxies on the surface of the celestial sphere. But our goal is to study the orientation of the spin vectors in the space and this requires the 3-D information about the galaxies. So, we used `PA-inclination' method as proposed by Flin \& Godlowski (1986) in order to convert two dimensional given parameters to three dimensional parameters. The formula to obtain the three dimensional information about the spin vector of the galaxies is given in Appendix \ref{God}. The equation used for transformation are,
+\begin{equation}\label{goldwski}
+\begin{array}{l}
+\sin \theta = -\cos i\sin \delta \pm \sin i\sin P\cos \delta;\\
+\\
+\sin \phi = \frac{- \cos i\cos \delta\sin \alpha + \sin i(\mp \sin P \sin \delta\sin \alpha \mp \cos P\cos \alpha)}{\cos \theta};\\
+\\
+\cos \phi = \frac{- \cos i\cos \delta\cos \alpha + \sin i(\mp \sin P \sin \delta\cos \alpha \pm \cos P\sin \alpha)}{\cos \theta}.\\
+\end{array}
+\end{equation}
+\\
+Here, $i$, $\delta$, $\alpha$ and $P$ represent the inclination
+angle, declination, right ascension and position angles (angle made by the major axis with celestial north pole measured from north-east-south)
+respectively.
+\\
+\\
+The inclination angle $i$, is the angle between the normal to the
+galaxy plane and the observer's line-of-sight and can be estimated
+with the Holmberg's (1946) formula. (Appendix \ref{holm})
+\begin{equation}
+\begin{array}{l}
+\cos^2 i = \frac{q^2 - q*^2}{1 - q*^2}
+\end{array}
+\end{equation}
+Here, q and q* represent the measured axial ratio ($b$/$a$) and
+the intrinsic flatness of the galaxy respectively. The intrinsic
+flatness of a disk galaxy depends on the morphological type. Here we have used q*=0.2 which means if we go on increasing the opening angle of the disk it can be converted into sphere in 5-folds.
+\subsection{Expected Distribution: Numerical Simulation}
+Aryal \& Saurer (2002) studied the effects of various types of selections in galaxy orientation study and concluded that any selections on the data may cause severe changes in the shapes of the expected isotropic distribution curves. Their method has been applied by several authors in galaxy orientation studies. Our galaxy samples are the members of the clusters which are located in a limited regions of the sky. Thus, it is of importance to remove both the positional and the inclination effects. Three kinds of selection effects are noticed in our database: (1) inhomogeneous distribution of position of galaxies, (2) lack of knowledge of position angles of nearly face-on galaxies and (3) lack of edge-on galaxies. These selection effects are removed and the expected isotropic distribution curves are determined using the numerical simulation methods as proposed by Aryal \& Saurer (2000). For this, a true spatial distribution of the galaxy rotation axis is assumed to be isotropic. Then, due to the projection effects, $i$ can be distributed $\propto\,sin\,i$, latitude can be distributed $\propto\,cos\,B$, the variables longitude ($L$) and position angle can be distributed randomly, and formula \eqref{goldwski} is used to simulate the corresponding distribution of $\theta$ and $\phi$. The simulation procedure is described in Aryal \& Saurer (2004).
+
+\subsection{Octave Code}
+We have developed a code named `GOBAD1.0' which offers random simulations and all calculations including statistics given in papers Holmberg (1946), Flin \& Godlowski (1986), Godlowski (1993), Aryal \& Saurer (2000), Press et al. (1992) and Hyanes \& Giovanni (2007) in order to carry out a systematic study of spatial orientation of spin vectors of galaxies in the clusters and Superclusters. This code is in the process of publication in MNRAS. We have used this code in order to study the spatial orientation of galaxies in three rotating clusters in this dissertation. The results of this work is already published in MNRAS (2013).
+\subsubsection*{main.m}
+\begin{verbatim}
+%--------------------------------------------------------------------- 
+%  Programmer: Bhattarai H.                                                                         
+%	           Central Department Of Physics                   
+%              Tribhuvan University                             
+%              Kirtipur, Nepal                                  
+%----------------------------------------------------------------------
+
+clear all, clc, close all;
+%--------------------------------------------------------------------------
+'***************************Data loaded************************************'
+%--------------------------------------------------------------------------
+
+data=load('data.dat');   
+%load data from the destination folder which in .dat format 
+%having L,B,P and I in cosecutive columns                
+                       
+%---------------------------------------------------------------------------   
+		'*****************Coordinte transformation ************************'
+%---------------------------------------------------------------------------
+l=data(:,2);
+b=data(:,3);
+p=data(:,4);
+i=data(:,1);
+save('gal_cod.mat','l','b','p','i')    
+
+%---------------------------------------------------------------------------
+  '***********************Godlowski_Transformation *********************'
+%---------------------------------------------------------------------------
+clear all, 
+load gal_cod.mat
+[theta1,theta2,phi1,phi2]=godlowski_transformation(l,b,p,i); 
+ 
+th=abs([theta1;theta2]');
+ph=[phi1;phi2]';
+
+dx_theta=5:10:85;
+dx_phi=-80:20:80;
+n_theta_bins=max(size(dx_theta));
+n_phi_bins=max(size(dx_phi));
+figure(1);
+clf()
+hist(th,dx_theta);
+title 'Histogram of theta '
+xlabel 'theta'
+ylabel '# of galaxies'
+xlim([-90,90])
+print -dpdf 1_theta_histo.pdf
+
+figure(2);
+clf()
+hist(ph,dx_phi);
+title 'Histogram of phi';
+xlabel 'phi';
+ylabel '# of galaxies'
+xlim([0,90])
+print -dpdf 2_phi_histo.pdf
+
+save('godl_trans.mat','th','ph','n_theta_bins','n_phi_bins');
+
+%--------------------------------------------------------------------
+'**************************Histogram:****************************'
+%--------------------------------------------------------------------
+clear all; close all, 
+load gal_cod.mat
+
+%------------------ HISTOGRAM FOR L -------------------------------------
+[l_n,l_data_in_bin,l_binsize,l_bin_start,l_bin_end]=histo_galactic(l,2);
+save ('hist_l.mat','l_n','l_data_in_bin','l_binsize','l_bin_start','l_bin_end')
+figure(3);
+clf()
+hist(l,l_n);
+xlabel 'l'
+ylabel '# galaxies'
+title 'Histogram of l'
+print -dpdf 3_hist_l_data.pdf
+
+%----------------- HISTOGRAM FOR B ----------------------------------------
+[b_n,b_data_in_bin,b_binsize,b_bin_start,b_bin_end]=histo_galactic(b,2);
+save ('hist_b.mat','b_n','b_data_in_bin','b_binsize','b_bin_start','b_bin_end')
+figure(4);
+clf()
+hist(b,b_n);
+xlabel 'b'
+ylabel '# galaxies'
+title 'Histogram of b'
+print -dpdf 4_hist_b_data.pdf
+
+%---------------- HISTOGRAM FOR P ----------------------------------------
+[p_n,p_data_in_bin,p_binsize,p_bin_start,p_bin_end]=histo_galactic(p,2);
+save ('hist_p.mat','p_n','p_data_in_bin','p_binsize','p_bin_start','p_bin_end')
+figure(5);
+clf()
+hist(p,p_n);
+xlabel 'p'
+ylabel '# galaxies'
+title 'Histogram of p'
+print -dpdf 5_hist_p_data.pdf
+
+%--------------- HISTOGRAM OF I ---------------------------------------------
+[i_n,i_data_in_bin,i_binsize,i_bin_start,i_bin_end]=histo_galactic(i,2);
+save ('hist_i.mat','i_n','i_data_in_bin','i_binsize','i_bin_start','i_bin_end')
+figure(6);
+clf()
+hist(i,i_n);
+xlabel 'i'
+ylabel '# galaxies'
+title 'Histogram of i'
+print -dpdf 6_hist_i_data.pdf
+
+%-----------------------------------------------------------------------------
+'***********************VIRTUAL GALAXIES SIMULAITON********************'
+%-----------------------------------------------------------------------------
+'*******************Virtual galaxies simulated for L***********************'
+clear all; close all; 
+load hist_l.mat
+[sim_l,total_data_l]=simulation(10^5,l_n,l_data_in_bin,l_bin_start,l_binsize);
+save ('virtual_l.mat','sim_l','total_data_l');
+
+%----------------------------------------------------------------------------
+'*******************Virtual galaxies simulated for B**********************'
+clear all,close all;
+load hist_b.mat
+[sim_b,total_data_b]=simulation(10^5,b_n,b_data_in_bin,b_bin_start,b_binsize);
+save ('virtual_b.mat','sim_b','total_data_b');
+
+%------------------------------------------------------------------------------
+'**********************Virtual galaxies simulated for P********************'
+clear all,close all;
+load hist_p.mat
+[sim_p,total_data_p]=simulation(10^5,p_n,p_data_in_bin,p_bin_start,p_binsize);
+save ('virtual_p.mat','sim_p','total_data_p');
+
+%------------------------------------------------------------------------------
+'*************************Virtual galaxies simulated for i*****************'
+clear all,close all;
+load hist_i.mat
+[sim_i,total_data_i]=simulation(10^5,i_n,i_data_in_bin,i_bin_start,i_binsize);
+save ('virtual_i.mat','sim_i','total_data_i');
+
+%-------------------------------------------------------------------------------
+'***********Godlowski_Transfomation for virtual galaxies ***************'
+%------------------------------------------------------------------------------
+clear all,close all;
+
+load virtual_b
+load virtual_p
+load virtual_l
+load virtual_i
+
+min_dim=min([total_data_l,total_data_b,total_data_p,total_data_i]);
+
+[theta_1,theta_2,phi_1,phi_2]=godlowski_transformation(sim_l(1:min_dim)...
+,sim_b(1:min_dim),sim_p(1:min_dim),sim_i(1:min_dim));
+
+theta=abs(transpose([theta_1,theta_2]'));
+phi=transpose([phi_1,phi_2]');
+
+save('virtual_theta_phi.mat','theta','phi');
+
+%-------------------------------------------------------------------------------
+'*************** COMPARING THE SIMULATED VRS REAL DATA ******************'
+%-------------------------------------------------------------------------------
+clear all,close all
+
+load godl_trans.mat;
+load virtual_theta_phi.mat;
+dx_theta=5:10:85;
+dx_phi=-80:20:80;
+
+theta_data=th;
+phi_data=ph;
+
+[n_data_bins_theta,data_bin_cent_theta]=hist(theta_data,dx_theta);
+[n_data_bins_phi,data_bin_cent_phi]=hist(phi_data,dx_phi);
+
+[n_simul_bins_theta,simul_bin_cent_theta]=hist(abs(theta),dx_theta);
+[n_simul_bins_phi,simul_bin_cent_phi]=hist(phi,dx_phi);
+
+n_simul_bins_phi=n_simul_bins_phi;
+n_simul_bins_theta=n_simul_bins_theta/2;
+n_data_bins_phi=n_data_bins_phi;
+n_data_bins_theta=n_data_bins_theta/2;
+
+n_simul_bins_phi_norm=n_simul_bins_phi*(sum(n_data_bins_phi)...
+/sum(n_simul_bins_phi));
+
+n_simul_bins_theta_norm=n_simul_bins_theta*(sum(n_data_bins_theta)...
+/sum(n_simul_bins_theta));
+
+dx_theta_l=(linspace(0,90,100));
+dx_phi_l=(linspace(-90,90,200));
+
+theta_simul=spline(data_bin_cent_theta,n_simul_bins_theta_norm,dx_theta_l);
+phi_simul=spline(data_bin_cent_phi,n_simul_bins_phi_norm,dx_phi_l);
+%--------------------------------------------------------------------------------
+figure(10);
+plot(data_bin_cent_theta,n_data_bins_theta,'oy',data_bin_cent_theta,...
+n_simul_bins_theta_norm,'sb',dx_theta_l,theta_simul,'r--');
+
+for i=1:n_theta_bins
+    hold on,   
+    errorbar(data_bin_cent_theta(i),n_data_bins_theta(i),sqrt(n_data_bins_theta(i)))
+end
+xlabel 'theta';
+ylabel '#';
+title 'sim vrs real theta';
+print -dpdf 9_sim_vrs_real_theta.pdf;
+%--------------------------------------------------------------------------------
+figure(11);
+plot(data_bin_cent_phi,n_data_bins_phi,'oy',data_bin_cent_phi,...
+n_simul_bins_phi_norm,'sb',dx_phi_l,phi_simul,'r--');
+
+for i=1:n_phi_bins
+    hold on,   
+    errorbar(data_bin_cent_phi(i),n_data_bins_phi(i),sqrt(n_data_bins_phi(i)))
+end
+
+xlabel 'phi';
+ylabel '#';
+title 'sim vrs real phi';
+print -dpdf 10_sim_vrs_real_phi.pdf;
+%-----------------------------------------------------------------------------------
+'*************************STATISTICAL TEST*********************************'
+%-----------------------------------------------------------------------------------
+[ fourier_coeff_theta,theta_P_greater_delta_1 ]=...
+    fourier_test(n_simul_bins_theta_norm,n_data_bins_theta,data_bin_cent_theta)
+[ fourier_coeff_phi,phi_P_greater_delta_1 ]=...
+    fourier_test(n_simul_bins_phi_norm,n_data_bins_phi,data_bin_cent_phi)
+
+chi_theta=chi2test(n_data_bins_theta,n_simul_bins_theta_norm)
+chi_phi=chi2test(n_data_bins_phi,n_simul_bins_phi_norm)
+auto_corr_theta=auto_correlation(n_data_bins_theta,n_simul_bins_theta_norm)
+auto_corr_phi=auto_correlation(n_data_bins_phi,n_simul_bins_phi_norm)
+H_ks_theta=ks_test(th',abs(theta'))
+H_ks_phi=ks_test(ph',phi')
+H_kv_theta=kv_test(th',abs(theta'))
+H_kv_phi=kv_test(ph',phi')
+%------------------------------------------------------------------------------------
+\end{verbatim}
+\pagebreak
+\subsubsection*{histo\_galactic.m}
+Histo\_galactic.m is the function file which takes the data and minimum number of data that each bin must contain and gives total number of bins, data in each bin, size of bin, bin start positon and bin ending postion as function output.
+\begin{verbatim}
+function [ n,data_in_bin,binsize,bin_start,bin_end ] =histo_galactic...
+( data,min_number )
+
+%HISTOGALACTIC
+%   This function determines the no of bins, data in each bin,size of bin,
+%   bin start positon and bin end position
+
+a=length(data);
+i=a;
+c=1;
+while c~=0
+    n=hist(data,i); 
+    c=0;
+    for j=1:length(n)
+        if (n(j)<min_number)
+           c=c+1;
+         end         
+   end
+    i=i-1;
+end
+n=i+1;
+[data_in_bin,h]=hist(data,i+1);
+binsize=h(2)-h(1);
+bin_start=h(1)-binsize/2;
+bin_end=h(length(h))+binsize/2;
+end
+\end{verbatim}
+\subsubsection*{godlwski\_transformation.m}
+Godlwski\_transformation.m is the function which implements the \eqref{goldwski} for the calculation of the polar angle ($\theta$) and azumithal angle ($\phi$) of the spin vector of galaxies.
+\begin{verbatim}
+function [ theta1,theta2,phi1,phi2 ] = godlowski_transformation( l,b,p,i )
+%GODLOWSKI_TRANSFOMATION 
+% this transformation converts 2-d data to 3-d information of the galaxy
+% the input are Latitude, longitude, positional angle and inclination
+% the output are theta1,theta2,phi1 and phi2
+
+L=degrad(l);
+B=degrad(b);           %converts all the angle in degrees to radian
+P=degrad(p);
+I=degrad(i);
+
+% delta1 = asin(-cos(i).*sin(B)+ sin(i).*sin(P).*cos(B));	%polar angle
+% delta2 = asin(-cos(i).*sin(B)- sin(i).*sin(P).*cos(B));	%polar angle
+% 
+% eta1 = asin ((-cos(i).*cos(B).*sin(L) + sin(i).*(-sin(P).*sin(B).*sin(L)-
+%cos(P).*cos(L)))./cos(delta1));  %azimuthal angle
+% eta2 = asin ((-cos(i).*cos(B).*sin(L) + sin(i).*(+sin(P).*sin(B).*sin(L)+
+%cos(P).*cos(L)))./cos(delta2));  %azimuthal angle
+
+theta1_rad=asin(-cos(I).*sin(B)+sin(I).*sin(P).*cos(B));
+phi1_rad=asin((-cos(I).*cos(B).*sin(L)+sin(I).*(-sin(P).*sin(B).*sin(L)...
+    -cos(P).*cos(L)))./cos(theta1_rad));
+
+theta2_rad=asin(-cos(I).*sin(B)-sin(I).*sin(P).*cos(B));
+phi2_rad=asin((-cos(I).*cos(B).*sin(L)+sin(I).*(sin(P).*sin(B).*sin(L)...
+    +cos(P).*cos(L)))./cos(theta2_rad));
+
+theta1=raddeg(theta1_rad);
+theta2=raddeg(theta2_rad);
+
+phi1=raddeg(phi1_rad);
+phi2=raddeg(phi2_rad);
+
+\end{verbatim}
+\subsubsection*{simulation.m}
+Simulation.m is the function that performs the numerical simulation as explained in the section in 4.1.3.
+\begin{verbatim}
+function [simulated_data,total_data ] = simulation( no_of_galaxies,no_of_bins...
+,data_in_bin,bin_start,bins_size )
+
+
+% SIMULATION[no_of_galaxies,no_of_bins,data_in_bins,bin_start,bin_size]
+% THis function helps to eliminate the selection effect of the galaxies by
+% doing the simulaiton considering homogenity and isotropy of the universe.
+
+prop=zeros(no_of_bins,1);
+for i=1:no_of_bins
+    prop(i)=ceil((data_in_bin(i)*no_of_galaxies/(sum(data_in_bin))));
+   
+end
+k=1;
+
+for i=1:no_of_bins
+    ran_gal=rand(prop(i),1);
+        for j=1:prop(i)
+             A(k)  =(bins_size*ran_gal(j,1))+bin_start+(i-1)*bins_size;
+             k=k+1;
+        end
+end
+total_data=sum(prop);
+rand_pos=randperm(sum(prop)); 
+LL=A(rand_pos(:));
+simulated_data=LL;
+end
+\end{verbatim}
+\textbf{\large{Statistical Test}}
+\subsubsection*{chi2test.m}
+Performs the $\chi^2$ test as explained in section \ref{chi}.
+\begin{verbatim}
+function [ prob ] = chi2test( obs,theo)
+%[Prob]= CHI2TEST(OBS,THEO)
+%  The above funciton return the probablity that the observed distribution
+% is same as the theoretical distribution.
+
+n=max(size(obs));
+% to eliminate data where theoretical value is 0
+for i=1:n
+    if theo(i)<=7 || obs(i)<=7
+        theo(i)=1;
+        obs(i)=1;
+    end
+end
+ chi2=sum((obs-theo).^2./theo);
+ a=(n-1)/2;
+ f=@(x)exp(-x).*x.^(a-1);
+ p=1/gamma(a)*quad(f,0,chi2/2);
+ prob=1-p;
+end
+\end{verbatim}
+\subsubsection*{auto\_correlation.m}
+Performs the auto-correlaiton test as explained in section \ref{auto}.
+\begin{verbatim}
+function [ c_coefficient ] = auto_correlation( obs,theo )
+% [CORRELATION_COEFFICIENT]=AUTO_CORRELATION(OBSERVED_NUMBER,THEORETICAL_NUMBER)
+%  This funciton calculates the autocorrelation coefficient when observed
+% and theoretical number of data  in each bin is passed to the function
+
+
+n=max(size(obs));
+c=0;
+for i=1:n-1
+    
+    if obs(i)<=7 || theo(i)<=7 || obs(i+1)<=7 || theo(i+1)<=7
+        d=0;
+    else
+        d=(obs(i)-theo(i))*(obs(i+1)-theo(i+1))/sqrt(theo(i)*theo(i+1));
+    end
+    c=c+d;
+end
+sigma_c=sqrt(n);
+c_coefficient=c/sigma_c;  
+
+end
+\end{verbatim}
+\subsubsection*{fourier\_test.m}
+Performs the fourier test as explained in section \ref{fourier}
+\begin{verbatim}
+function [ first_coefficient,P_greater_delta_1 ]...
+    = fourier_test( N_th,N_obs,angles )
+%FOURIER_TEST
+%This function take the theoretical and observed number of galaxies with 
+%their resepective bin anlges and calulates different parameters in fourie
+%er test.
+angles=degrad(angles);
+
+delta_11=sum((N_obs-N_th).*cos(2*angles))./sum(N_th.*(cos(2*angles).^2));
+
+delta_21=sum((N_obs-N_th).*sin(2*angles))./sum(N_th.*(sin(2*angles).^2));
+
+sigma_11=sqrt(sum(N_th.*(cos(2*angles)).^2));
+sigma_21=sqrt(sum(N_th.*(sin(2*angles)).^2));
+delta_1=sqrt(delta_11^2+delta_21^2);
+a=max(size(N_obs));
+P_greater_delta_1=exp(-a/4.0*sum(N_obs)*delta_1^2);
+first_coefficient=delta_11/sigma_11;
+end
+\end{verbatim}
+\subsubsection*{ks\_test.m}
+Performs the Kolmogorov-Smirnov (K-S) test as explained in section \ref{kstest}.
+\begin{verbatim}
+function [H] = ks_test(obs,theo )
+
+edges=[-inf;sort([obs;theo]);inf];
+count1=histc(obs,edges);
+count2=histc(theo,edges);
+
+sumcount1=cumsum(count1)./sum(count1);
+sumcount2=cumsum(count2)./sum(count2);
+
+cdf1=sumcount1(1:end-1);
+cdf2=sumcount2(1:end-1);
+
+diffcdf=abs(cdf1-cdf2);
+n1=length(obs);
+n2=length(obs);
+
+n=n1*n2/(n1+n2);
+ks=max(diffcdf);
+
+lambda=max((sqrt(n)+0.12+0.11/sqrt(n))*ks,0);
+k=(1:101)';
+p=2*sum((-k).^(k-1).*exp(-2*lambda*lambda*k.^2));
+p=min(max(p,0),1);
+alpha=0.05;
+H=(alpha>=p);
+if H==0
+    'Null hypothesis accepted'
+else
+   'Null hypothesis rejected'
+end
+end
+
+\end{verbatim}
+\subsubsection*{kv\_test.m}
+Performs the Kupier-V test as explained in section \ref{kvtest}.
+\begin{verbatim}
+function [H] = kv_test(obs,theo )
+edges=[-inf;sort([obs;theo]);inf];
+count1=histc(obs,edges);
+count2=histc(theo,edges);
+
+sumcount1=cumsum(count1)./sum(count1);
+sumcount2=cumsum(count2)./sum(count2);
+
+cdf1=sumcount1(1:end-1);
+cdf2=sumcount2(1:end-1);
+
+diffcdf1=(cdf1-cdf2);
+diffcdf2=(cdf2-cdf1);
+n1=length(obs);
+n2=length(obs);
+
+n=n1*n2/(n1+n2);
+d1=max(diffcdf1);
+d2=max(diffcdf2);
+ks=d1+d2;
+
+lambda=max((sqrt(n)+0.155+0.24/sqrt(n))*ks,0);
+k=(1:101)';
+p=2*sum((4*k.^2.*lambda.^2-1).*exp(-2*lambda*lambda*k.^2));
+p=min(max(p,0),1);
+alpha=0.05;
+H=(alpha>=p);
+if H==0
+    'Null hypothesis accepted'
+else
+   'Null hypothesis rejected'
+end
+end
+\end{verbatim}
+\subsubsection*{raddeg.m}
+\begin{verbatim}
+function [out]=raddeg(in)
+% converts radian to degree
+out=180/pi.*in;
+\end{verbatim}
+\subsubsection*{degrad.m}
+\begin{verbatim}
+function [out]=degrad(in)
+%converts degree to radain
+out=pi/180.*in;
+\end{verbatim}

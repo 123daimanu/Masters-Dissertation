@@ -1,0 +1,177 @@
+\documentclass[fleqn,a4paper,12pt,oneside]{biik}
+\usepackage{graphicx}
+\usepackage{float}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+\usepackage{pdfpages}
+
+%------------------------------------------------------------------------
+%setup for hyperlink
+\usepackage{color}   %May be necessary if you want to color links
+\usepackage{hyperref}
+\hypersetup{
+    colorlinks=true, %set true if you want colored links
+    linktoc=all,     %set to all if you want both sections and subsections linked
+    linkcolor=black,  %choose some color if you want links to stand out
+}
+\hypersetup{linktocpage}
+%-------------------------------------------------------------------------------
+%\usepackage[hang]{caption2}
+%\usepackage{bbm}
+%-------------------------------------------------------------------------
+
+%-------------------------------------------------------------------------
+\newtheorem{theorem}{Theorem}
+\newtheorem{acknowledgement}[theorem]{Acknowledgement}
+\newtheorem{algorithm}[theorem]{Algorithm}
+\newtheorem{axiom}[theorem]{Axiom}
+\newtheorem{case}[theorem]{Case}
+\newtheorem{claim}[theorem]{Claim}
+\newtheorem{conclusion}[theorem]{Conclusion}
+\newtheorem{condition}[theorem]{Condition}
+\newtheorem{conjecture}[theorem]{Conjecture}
+\newtheorem{corollary}[theorem]{Corollary}
+\newtheorem{criterion}[theorem]{Criterion}
+\newtheorem{definition}[theorem]{Definition}
+\newtheorem{example}[theorem]{Example}
+\newtheorem{exercise}[theorem]{Exercise}
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{notation}[theorem]{Notation}
+\newtheorem{problem}[theorem]{Problem}
+\newtheorem{proposition}[theorem]{Proposition}
+\newtheorem{remark}[theorem]{Remark}
+\newtheorem{solution}[theorem]{Solution}
+\newtheorem{summary}[theorem]{Summary}
+\newenvironment{proof}[1][Proof]{\textbf{#1.} }{\ \rule{0.5em}{0.5em}}
+\setlength{\voffset}{-1cm}
+
+\setlength{\topmargin}{1cm}
+
+\setcounter{secnumdepth}{5}
+
+\setcounter{tocdepth}{3}
+
+\setlength{\headheight}{0cm}
+
+\setlength{\headsep}{1.5cm}
+
+\setlength{\oddsidemargin}{0cm}
+
+\setlength{\evensidemargin}{0cm}
+
+\setlength{\textheight}{23cm}
+
+\setlength{\textwidth}{16.5cm}
+
+
+%\renewcommand{\captionlabelfont}{\scriptsize}
+%\renewcommand{\captionfont}{\scriptsize}
+%\setlength{\captionmargin}{50pt}
+
+\title{\bf Spatial Orientation of Spin Vectors of Galaxies in Three Rotating Clusters: A New Code GOBAD1.0 Proposed}
+\author{\textbf{A Dissertation}
+\\
+\\
+\\
+Submitted  to the Central Department of Physics,\\ University
+Campus, in the Partial Fulfillment for the Requirement of
+\\Master's Degree of Science in Physics\\
+\\
+\\
+\\
+By}
+\date{\Large\bf Hemanta Bhattarai\\\today}
+
+\begin{document}
+\setlength{\textheight}{23.5cm} \maketitle \tableofcontents
+\setlength{\textheight}{23cm}
+%------------------------------------------------------
+\frontmatter{
+\include{recommendation}
+\include{auck}
+\include{evaluation}
+}
+
+\mainmatter{
+\input{abstract}
+%------------------------------------------------------
+% Introduction
+%------------------------------------------------------
+\chapter{Introduction}
+
+\include{intro}
+%------------------------------------------------------
+%chapter Theory: Structure formation and origin of anglular
+%momentum. Li model of rotating universe.
+%------------------------------------------------------
+\chapter{Theory}
+
+\include{theory}
+
+%------------------------------------------------------
+% Database according to Huang Lee and their methods for
+%prediction of the rotating clusters
+%------------------------------------------------------
+\chapter{Database}
+
+\include{sample}
+
+
+%------------------------------------------------------
+ %methods: PA-inclination method, Simulation procedure and about the Statistics
+ % matlab code
+%------------------------------------------------------
+\chapter{Methods of Analysis}
+
+\include{method}
+
+%------------------------------------------------------
+ %Statistical Results: Polar and Azimuthal angle distribution
+%------------------------------------------------------
+
+%------------------------------------------------------
+\chapter{Result and Discussion}
+\include{result}
+
+%------------------------------------------------------
+
+%\chapter{Discussion}
+%
+%\include{discussion}
+
+%------------------------------------------------------
+% Conclusion of present work
+%------------------------------------------------------
+\input{conclusion}
+
+
+%------------------------------------------------------
+% Future Prospectus
+%------------------------------------------------------
+%\input{Future}
+
+
+%-------------------------------------------------------
+
+\include{ref}
+
+
+%------------------------------------------------------
+% Appendix
+%------------------------------------------------------
+\begin{appendix}
+
+%-----------------------------------------------------
+%Godlwoski transformation equation
+\include{AppendixA}
+
+\include{AppendixB}
+
+\include{AppendixC}
+\include{AppendixD}
+\include{appendixe}
+\end{appendix}
+}
+%-----------------------------------------------------------
+\end{document}
